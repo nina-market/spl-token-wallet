@@ -64,6 +64,7 @@ function CreateWalletForm() {
   const callAsync = useCallAsync();
 
   function submit(password) {
+    console.log("SUBMITTIG");
     const { mnemonic, seed } = mnemonicAndSeed;
     callAsync(
       storeMnemonicAndSeed(
@@ -83,6 +84,7 @@ function CreateWalletForm() {
     return (
       <SeedWordsForm
         mnemonicAndSeed={mnemonicAndSeed}
+        onSubmit={submit}
         goForward={() => setSavedWords(true)}
       />
     );
@@ -97,7 +99,7 @@ function CreateWalletForm() {
   );
 }
 
-function SeedWordsForm({ mnemonicAndSeed, goForward }) {
+function SeedWordsForm({ mnemonicAndSeed, goForward, onSubmit }) {
   const [confirmed, setConfirmed] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
@@ -149,28 +151,15 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
             derivation path for the main wallet. To use an alternative path, try
             restoring an existing wallet.
           </Typography>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={confirmed}
-                disabled={!mnemonicAndSeed}
-                onChange={(e) => setConfirmed(e.target.checked)}
-              />
-            }
-            label="I have saved these words in a safe place."
-          />
-          <Typography paragraph>
-          <Button variant="contained" color="primary" style={{ marginTop: 20 }} onClick={() => {
-            downloadMnemonic(mnemonicAndSeed?.mnemonic);
-            setDownloaded(true);
-          }}>
-            Download Backup Mnemonic File (Required)
-          </Button>
-          </Typography>
+
+
         </CardContent>
         <CardActions style={{ justifyContent: 'flex-end' }}>
-          <Button color="primary" disabled={!confirmed || !downloaded} onClick={() => setShowDialog(true)}>
-            Continue
+          <Button
+            color="primary"
+            onClick={() => onSubmit()}
+          >
+            Create Wallet
           </Button>
         </CardActions>
       </Card>
@@ -204,7 +193,6 @@ function SeedWordsForm({ mnemonicAndSeed, goForward }) {
           <Button
             type="submit"
             color="secondary"
-            disabled={normalizeMnemonic(seedCheck) !== mnemonicAndSeed?.mnemonic}
           >
             Continue
           </Button>
